@@ -7,19 +7,15 @@ import { TextureLoader } from 'three';
 function BooksInstanced({ position, shelfIndex, side = 'left' }: { position: [number, number, number]; shelfIndex: number; side?: 'left' | 'right' }) {
   const bookColors = [
     '#4a1010', '#0a3a0a', '#0a104a', '#4a2010', '#2a0a4a',
-    '#c05050', '#5070a0', '#b08040', '#8060a0', '#40b040'
+    '#c05050', '#5070a0', '#b08040', '#8060a0', '#40b040',
+    '#d0b050', '#50a0c0', '#a05050', '#5050a0', '#80a050'
   ];
   
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  
-  useFrame((state) => {
-    if (meshRef.current) {
-      const mesh = meshRef.current as any;
-      if (mesh.isInstancedMesh) {
-        // 这里可以添加动画效果，如果需要的话
-      }
-    }
-  });
+  const bookTexture = useLoader(TextureLoader, 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=book%20spine%20texture%20high%20quality%20seamless&image_size=square');
+  bookTexture.wrapS = THREE.RepeatWrapping;
+  bookTexture.wrapT = THREE.RepeatWrapping;
+  bookTexture.repeat.set(1, 1);
   
   const matrix = new THREE.Matrix4();
   const color = new THREE.Color();
@@ -27,7 +23,7 @@ function BooksInstanced({ position, shelfIndex, side = 'left' }: { position: [nu
   useEffect(() => {
     if (meshRef.current) {
       const mesh = meshRef.current;
-      const count = 12;
+      const count = 15; // 增加书籍数量
       
       for (let i = 0; i < count; i++) {
         const seed = shelfIndex * 100 + i;
@@ -36,12 +32,13 @@ function BooksInstanced({ position, shelfIndex, side = 'left' }: { position: [nu
           return min + (x - Math.floor(x)) * (max - min);
         };
         
-        const height = 0.7 + getRandom(0, 0.4);
-        const width = 0.3 + getRandom(0, 0.2);
-        const depth = 0.5 + getRandom(0, 0.1);
+        // 更多样的书籍尺寸
+        const height = 0.6 + getRandom(0, 0.6); // 增加高度变化
+        const width = 0.2 + getRandom(0, 0.3); // 增加宽度变化
+        const depth = 0.4 + getRandom(0, 0.2); // 增加深度变化
         const bookColor = bookColors[Math.floor(getRandom(0, bookColors.length))];
-        const xPos = -2.2 + i * 0.4;
-        const rotation = getRandom(-0.04, 0.04);
+        const xPos = -2.4 + i * 0.35; // 调整间距，容纳更多书籍
+        const rotation = getRandom(-0.08, 0.08); // 增加旋转角度
         
         // 设置位置
         matrix.makeTranslation(
@@ -69,7 +66,12 @@ function BooksInstanced({ position, shelfIndex, side = 'left' }: { position: [nu
   return (
     <instancedMesh
       ref={meshRef}
-      args={[new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ vertexColors: true }), 12]}
+      args={[new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ 
+        vertexColors: true,
+        map: bookTexture,
+        roughness: 0.7,
+        metalness: 0.05
+      }), 15]}
       castShadow
       receiveShadow
     />

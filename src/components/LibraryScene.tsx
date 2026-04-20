@@ -79,20 +79,67 @@ export default function LibraryScene() {
   return (
     <>
       {/* 环境光 */}
-      <ambientLight intensity={0.5} color="#f0e0d0" />
+      <ambientLight intensity={0.3} color="#f0e0d0" />
 
-      {/* 主方向光 */}
+      {/* 主方向光 - 模拟阳光 */}
       <directionalLight
         position={[30, 40, 30]}
-        intensity={2}
+        intensity={1.5}
         color="#fffde8"
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[4096, 4096]}
         shadow-camera-left={-50}
         shadow-camera-right={50}
         shadow-camera-top={50}
         shadow-camera-bottom={-50}
+        shadow-camera-near={0.5}
+        shadow-camera-far={100}
       />
+
+      {/* 辅助方向光 - 模拟室内灯光 */}
+      <directionalLight
+        position={[-20, 30, -20]}
+        intensity={0.8}
+        color="#f0e6d2"
+      />
+
+      {/* 点光源 - 模拟吊灯 */}
+      <pointLight
+        position={[0, 8, 0]}
+        intensity={1.2}
+        color="#ffd700"
+        distance={50}
+        decay={2}
+      />
+
+      {/* 点光源 - 模拟壁灯 */}
+      {[[-35, 6, -35], [35, 6, -35], [-35, 6, 35], [35, 6, 35]].map(([x, y, z], i) => (
+        <pointLight
+          key={`wall-light-${i}`}
+          position={[x, y, z]}
+          intensity={0.6}
+          color="#f0e6d2"
+          distance={30}
+          decay={2}
+        />
+      ))}
+
+      {/* 聚光灯 - 模拟阅读灯 */}
+      {[[-15, 4, -15], [15, 4, -15], [-15, 4, 15], [15, 4, 15]].map(([x, y, z], i) => (
+        <spotLight
+          key={`reading-light-${i}`}
+          position={[x, y, z]}
+          intensity={0.8}
+          color="#ffffff"
+          angle={Math.PI / 6}
+          penumbra={0.2}
+          decay={2}
+          distance={20}
+        />
+      ))}
+
+      {/* 雾效 */}
+      <fog color="#1a1408" near={50} far={100} />
 
       {/* 场景元素 */}
       <Floor />
