@@ -109,8 +109,8 @@ const Minimap: React.FC = () => {
   }, [userPosition]);
 
   return (
-    <div className="fixed top-4 right-4 z-40">
-      <div className="bg-black/70 backdrop-blur-sm rounded-lg p-2 shadow-lg border border-[#d4af37]/30">
+    <div className="fixed top-4 right-4 z-50 pointer-events-none">
+      <div className="bg-black/70 backdrop-blur-sm rounded-lg p-2 shadow-lg border border-[#d4af37]/30 pointer-events-auto">
         <div className="text-[#d4af37] text-xs mb-2 font-serif text-center">图书馆地图</div>
         <canvas
           ref={canvasRef}
