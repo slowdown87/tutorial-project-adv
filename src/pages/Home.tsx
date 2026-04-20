@@ -6,6 +6,7 @@ import { useTutorialStore } from '../store/tutorialStore';
 import TutorialContent from '../components/TutorialContent';
 import Hotspot from '../components/Hotspot';
 import LibraryScene from '../components/LibraryScene';
+import Minimap from '../components/Minimap';
 
 function PositionTracker() {
   const { camera } = useThree();
@@ -59,6 +60,7 @@ export default function Home() {
         ))}
       </Canvas>
       
+      <Minimap />
       <TutorialContent />
       
       <div className="fixed top-4 left-4 bg-black/70 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-[#d4af37]/30">
