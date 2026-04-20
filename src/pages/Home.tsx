@@ -6,11 +6,17 @@ import TutorialContent from '../components/TutorialContent';
 import Hotspot from '../components/Hotspot';
 import DragControls from '../components/DragControls';
 import { useAudio } from '../utils/audio';
+import { usePhysics } from '../hooks/usePhysics';
 
 // 动态导入大型组件
 const LibraryScene = lazy(() => import('../components/LibraryScene'));
 const Minimap = lazy(() => import('../components/Minimap'));
 const TaskUI = lazy(() => import('../components/TaskUI'));
+
+function PhysicsManager() {
+  usePhysics();
+  return null;
+}
 
 function PositionTracker() {
   const { camera } = useThree();
@@ -131,6 +137,7 @@ export default function Home() {
         <Suspense fallback={null}>
           <LibraryScene />
         </Suspense>
+        <PhysicsManager />
         <DragControls 
           lookSpeed={0.002} 
           movementSpeed={1.0}

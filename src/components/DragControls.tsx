@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { checkCollision, calculateSlideVector } from '../utils/collision';
+import * as CANNON from 'cannon-es';
+import { getPhysicsWorld } from '../utils/physics';
 
 interface DragControlsProps {
   movementSpeed?: number;
@@ -121,14 +122,39 @@ const DragControls: React.FC<DragControlsProps> = ({
       const targetPosition = camera.position.clone();
       targetPosition.addScaledVector(direction, speed);
       
-      // 检测碰撞
-      if (!checkCollision(targetPosition)) {
-        // 无碰撞，直接移动
+      // 使用物理引擎检测碰撞
+      const world = getPhysicsWorld();
+      const playerShape = new CANNON.Sphere(0.5); // 玩家碰撞体
+      const playerBody = new CANNON.Body({
+        mass: 1,
+        position: new CANNON.Vec3(targetPosition.x, targetPosition.y, targetPosition.z),
+        shape: playerShape
+      });
+      
+      // 检测与所有静态物体的碰撞
+      let collision = false;
+      for (const body of world.bodies) {
+        if (body.mass === 0) { // 只检测静态物体
+          const contact = new CANNON.ContactMaterial(playerBody.material, body.material, {
+            friction: 0.3,
+            restitution: 0.1
+          });
+          world.addContactMaterial(contact);
+          
+          // 检测碰撞
+          const distance = playerBody.position.distanceTo(body.position);
+          const minDistance = playerShape.radius + body.shapes[0].boundingSphereRadius;
+          
+          if (distance < minDistance) {
+            collision = true;
+            break;
+          }
+        }
+      }
+      
+      // 如果没有碰撞，移动相机
+      if (!collision) {
         camera.position.copy(targetPosition);
-      } else {
-        // 有碰撞，尝试滑动
-        const slidePosition = calculateSlideVector(targetPosition, camera.position);
-        camera.position.copy(slidePosition);
       }
     }
   });
