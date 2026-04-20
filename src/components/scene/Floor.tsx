@@ -6,9 +6,9 @@ import { TextureLoader } from 'three';
 // 地面组件
 export default function Floor() {
   // 加载木纹纹理
-  const woodTexture = useLoader(TextureLoader, 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=wood%20floor%20texture%20high%20quality%20seamless&image_size=square');
+  const woodTexture = useLoader(TextureLoader, 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=dark%20wood%20floor%20texture%20high%20quality%20seamless%20oak&image_size=square');
   woodTexture.wrapS = woodTexture.wrapT = THREE.RepeatWrapping;
-  woodTexture.repeat.set(10, 10);
+  woodTexture.repeat.set(5, 5); // 减少重复次数，使纹理更清晰
   
   return (
     <group>
@@ -17,9 +17,9 @@ export default function Floor() {
         <planeGeometry args={[80, 80, 40, 40]} />
         <meshStandardMaterial
           map={woodTexture}
-          color="#7c5c3c"
-          roughness={0.9}
-          metalness={0.0}
+          color="#5c4020" // 更深的颜色，与桌椅区分
+          roughness={0.85}
+          metalness={0.05}
         />
       </mesh>
 
