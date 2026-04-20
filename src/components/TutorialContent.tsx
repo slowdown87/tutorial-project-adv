@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useTutorialStore } from '../store/tutorialStore';
 
 export default function TutorialContent() {
@@ -6,6 +7,18 @@ export default function TutorialContent() {
   
   // 找到当前教程
   const tutorial = tutorials.find(t => t.id === currentTutorial);
+  
+  // 添加空格键跳过教程功能
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.code === 'Space' && currentTutorial) {
+        completeTutorial(currentTutorial);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentTutorial, completeTutorial]);
   
   if (!tutorial) return null;
   
