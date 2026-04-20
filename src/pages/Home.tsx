@@ -45,7 +45,7 @@ export default function Home() {
       >
         <LibraryScene />
         <DragControls 
-          lookSpeed={0.015} 
+          lookSpeed={0.002} 
           movementSpeed={1.0}
         />
         <PositionTracker />

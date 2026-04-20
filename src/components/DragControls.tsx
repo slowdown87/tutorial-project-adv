@@ -9,11 +9,10 @@ interface DragControlsProps {
 
 const DragControls: React.FC<DragControlsProps> = ({ 
   movementSpeed = 1.0,
-  lookSpeed = 0.015
+  lookSpeed = 0.002
 }) => {
   const { camera, gl } = useThree();
   const [isDragging, setIsDragging] = useState(false);
-  const [movement, setMovement] = useState({ x: 0, z: 0 });
   const eulerRef = useRef(new THREE.Euler(0, 0, 0, 'YXZ'));
   const lastMousePos = useRef({ x: 0, y: 0 });
   const keysRef = useRef({ w: false, a: false, s: false, d: false });
@@ -51,11 +50,15 @@ const DragControls: React.FC<DragControlsProps> = ({
   useEffect(() => {
     const canvas = gl.domElement;
 
+    // 防止默认鼠标行为
+    const handleContextMenu = (e: MouseEvent) => e.preventDefault();
+
     const handleMouseDown = (e: MouseEvent) => {
       if (e.button === 0) { // 左键
         setIsDragging(true);
         lastMousePos.current = { x: e.clientX, y: e.clientY };
         canvas.style.cursor = 'grabbing';
+        canvas.focus?.();
       }
     };
 
@@ -85,11 +88,13 @@ const DragControls: React.FC<DragControlsProps> = ({
     canvas.addEventListener('mousedown', handleMouseDown);
     document.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('contextmenu', handleContextMenu);
 
     return () => {
       canvas.removeEventListener('mousedown', handleMouseDown);
       document.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('contextmenu', handleContextMenu);
     };
   }, [gl, camera, isDragging, lookSpeed]);
 
