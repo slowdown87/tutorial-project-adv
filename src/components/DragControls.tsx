@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { checkCollision, calculateSlideVector } from '../utils/collision';
 
 interface DragControlsProps {
   movementSpeed?: number;
@@ -74,8 +75,8 @@ const DragControls: React.FC<DragControlsProps> = ({
       const deltaY = e.clientY - lastMousePos.current.y;
 
       eulerRef.current.setFromQuaternion(camera.quaternion);
-      eulerRef.current.y -= deltaX * lookSpeed;
-      eulerRef.current.x -= deltaY * lookSpeed;
+      eulerRef.current.y += deltaX * lookSpeed;
+      eulerRef.current.x += deltaY * lookSpeed;
 
       // 限制垂直视角
       eulerRef.current.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, eulerRef.current.x));
@@ -115,7 +116,20 @@ const DragControls: React.FC<DragControlsProps> = ({
       direction.normalize();
       direction.applyEuler(new THREE.Euler(0, camera.rotation.y, 0));
       const speed = movementSpeed * delta;
-      camera.position.addScaledVector(direction, speed);
+      
+      // 计算目标位置
+      const targetPosition = camera.position.clone();
+      targetPosition.addScaledVector(direction, speed);
+      
+      // 检测碰撞
+      if (!checkCollision(targetPosition)) {
+        // 无碰撞，直接移动
+        camera.position.copy(targetPosition);
+      } else {
+        // 有碰撞，尝试滑动
+        const slidePosition = calculateSlideVector(targetPosition, camera.position);
+        camera.position.copy(slidePosition);
+      }
     }
   });
 

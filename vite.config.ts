@@ -8,6 +8,22 @@ export default defineConfig({
   base: '/tutorial-project-adv',
   build: {
     sourcemap: 'hidden',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true
+      }
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three'],
+          react: ['react', 'react-dom'],
+          ui: ['@react-three/drei', '@react-three/fiber'],
+          zustand: ['zustand']
+        }
+      }
+    }
   },
   plugins: [
     react({

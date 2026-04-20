@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useUserStore } from './userStore';
 
 // 教程内容数据结构
 export interface TutorialContent {
@@ -11,25 +12,12 @@ export interface TutorialContent {
   mediaUrl?: string; // 图片或视频URL
 }
 
-// 用户状态数据结构
-export interface UserState {
-  position: { x: number; y: number; z: number };
-  rotation: { x: number; y: number; z: number };
-  completedTutorials: string[];
-  currentTutorial: string | null;
-}
-
-// 状态管理store
+// 教程状态管理store
 export const useTutorialStore = create<{
   // 状态
   tutorials: TutorialContent[];
-  userState: UserState;
   
   // 动作
-  setUserPosition: (position: { x: number; y: number; z: number }) => void;
-  setUserRotation: (rotation: { x: number; y: number; z: number }) => void;
-  setCurrentTutorial: (tutorialId: string | null) => void;
-  completeTutorial: (tutorialId: string) => void;
   checkTutorialTrigger: () => void;
 }>((set, get) => ({
   // 初始状态
@@ -83,45 +71,11 @@ export const useTutorialStore = create<{
       type: 'text'
     }
   ],
-  userState: {
-    position: { x: 0, y: 1.6, z: 10 },
-    rotation: { x: 0, y: 0, z: 0 },
-    completedTutorials: [],
-    currentTutorial: null
-  },
   
   // 动作实现
-  setUserPosition: (position) => set((state) => ({
-    userState: {
-      ...state.userState,
-      position
-    }
-  })),
-  
-  setUserRotation: (rotation) => set((state) => ({
-    userState: {
-      ...state.userState,
-      rotation
-    }
-  })),
-  
-  setCurrentTutorial: (tutorialId) => set((state) => ({
-    userState: {
-      ...state.userState,
-      currentTutorial: tutorialId
-    }
-  })),
-  
-  completeTutorial: (tutorialId) => set((state) => ({
-    userState: {
-      ...state.userState,
-      completedTutorials: [...state.userState.completedTutorials, tutorialId],
-      currentTutorial: null
-    }
-  })),
-  
   checkTutorialTrigger: () => {
-    const { tutorials, userState } = get();
+    const { tutorials } = get();
+    const { userState } = useUserStore.getState();
     const { position } = userState;
     
     // 如果当前已经有教程在显示，不处理
@@ -137,12 +91,7 @@ export const useTutorialStore = create<{
       
       // 如果距离小于触发半径且教程未完成
       if (distance < tutorial.radius && !userState.completedTutorials.includes(tutorial.id)) {
-        set({ 
-          userState: {
-            ...userState,
-            currentTutorial: tutorial.id
-          }
-        });
+        useUserStore.getState().setCurrentTutorial(tutorial.id);
         break;
       }
     }
