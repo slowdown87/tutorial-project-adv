@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { FirstPersonControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useTutorialStore } from '../store/tutorialStore';
 import TutorialContent from '../components/TutorialContent';
 import Hotspot from '../components/Hotspot';
 import LibraryScene from '../components/LibraryScene';
 import Minimap from '../components/Minimap';
+import DragControls from '../components/DragControls';
 
 function PositionTracker() {
   const { camera } = useThree();
@@ -44,10 +44,9 @@ export default function Home() {
         onCreated={() => setIsLoading(false)}
       >
         <LibraryScene />
-        <FirstPersonControls 
+        <DragControls 
           lookSpeed={0.015} 
           movementSpeed={1.0}
-          makeDefault
         />
         <PositionTracker />
         {useTutorialStore.getState().tutorials.map((tutorial) => (
@@ -66,8 +65,8 @@ export default function Home() {
       <div className="fixed top-4 left-4 bg-black/70 backdrop-blur-sm p-4 rounded-lg shadow-lg border border-[#d4af37]/30">
         <h3 className="text-sm font-medium text-[#d4af37] mb-2 font-serif">控制说明</h3>
         <ul className="text-xs text-gray-300 space-y-1">
-          <li>WASD/箭头键 - 移动 (速度已提升)</li>
-          <li>鼠标拖动 - 控制视角 (灵敏度已提升)</li>
+          <li>WASD/箭头键 - 移动</li>
+          <li>按住鼠标左键拖动 - 控制视角</li>
           <li>走到金色圆环处 - 触发教程</li>
           <li>按空格键 - 跳过当前教程</li>
         </ul>
